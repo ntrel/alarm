@@ -55,8 +55,8 @@ alarm 60 [-s]
 
 Wait for e.g. 60 minutes before notifying the user.
 -s uses seconds instead of minutes.
-Outputs a log file with start time in the binary's directory.
-";
+Logs the start time to %s.
+".strip;
 
 void run(string[] args)
 {
@@ -65,7 +65,7 @@ void run(string[] args)
 	getopt(args, "s", {minuteMul = 1;});
 	if (args.length != 2)
 	{
-		enum msg = usage.strip;
+		auto msg = usage.format(logfile);
 		messageBox(msg.toUTF16z, "Error!");
 		writeln(msg);
 		return;
