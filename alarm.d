@@ -84,7 +84,7 @@ void run(string[] args)
 	while(1)
 	{
 		auto start = currTime();
-		auto startmsg = format("Started on ", start,
+		auto startmsg = text("Started on ", start,
 			"\nTimer duration: ", getDur(duration));
 		File(logfile, "w").writeln(startmsg);
 
