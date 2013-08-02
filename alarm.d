@@ -21,15 +21,6 @@
 
 /* Note: Currently requires Windows for MessageBoxW dialog function */
 
-string usage = "
-Usage:
-alarm 60 [-s]
-
-Wait for e.g. 60 minutes before notifying the user.
--s uses seconds instead of minutes.
-Outputs a log file with start time in the binary's directory.
-";
-
 import std.conv;
 import std.stdio;
 import std.string;
@@ -49,20 +40,41 @@ auto currTime()
 }
 
 auto messageBox(const(wchar)* msg, const(wchar)* title,
-	uint type, uint icon, uint flags = 0)
+	uint type = MB_OK, uint icon = MB_ICONINFORMATION, uint flags = 0)
 {
 	return MessageBoxW(null, msg, title, type | icon | flags | MB_TOPMOST);
 }
 
 void main(string[] args)
 {
-	scope(failure) messageBox(null, "Error!", 0, MB_ICONERROR);
+	try
+		run(args);
+	catch (Exception e)
+	{
+		messageBox(e.msg.toUTF16z, "Error!", MB_OK, MB_ICONERROR);
+		throw e;
+	}
+}
+
+enum string usage = "
+Usage:
+alarm 60 [-s]
+
+Wait for e.g. 60 minutes before notifying the user.
+-s uses seconds instead of minutes.
+Outputs a log file with start time in the binary's directory.
+";
+
+void run(string[] args)
+{
 	string logfile = buildPath(dirName(args.front), "alarm.txt");
 	auto minuteMul = 60;
 	getopt(args, "s", {minuteMul = 1;});
 	if (args.length != 2)
 	{
-		writeln(usage);
+		enum msg = usage.strip;
+		messageBox(msg.toUTF16z, "Error!");
+		writeln(msg);
 		return;
 	}
 	size_t duration = to!size_t(args[1]);
