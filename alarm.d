@@ -30,14 +30,7 @@ import std.path;
 import std.getopt;
 import std.utf;
 import std.datetime;
-import core.thread;
 import std.c.windows.windows;
-
-
-auto currTime()
-{
-	return cast(DateTime)Clock.currTime();
-}
 
 auto messageBox(const(wchar)* msg, const(wchar)* title,
 	uint type = MB_OK, uint icon = MB_ICONINFORMATION, uint flags = 0)
@@ -78,8 +71,12 @@ void run(string[] args)
 		return;
 	}
 	size_t duration = to!size_t(args[1]);
-	auto getDur = (size_t n){return dur!"seconds"(n * minuteMul);};
-	void sleep(size_t n){Thread.sleep(getDur(n));}
+	auto getDur(size_t n){return dur!"seconds"(n * minuteMul);}
+	void sleep(size_t n){
+		import core.thread;
+		Thread.sleep(getDur(n));
+	}
+	auto currTime(){return cast(DateTime)Clock.currTime();}
 
 	while(1)
 	{
