@@ -27,7 +27,6 @@ import std.string;
 import std.array;
 import std.algorithm;
 import std.path;
-import std.getopt;
 import std.utf;
 import std.datetime;
 import std.c.windows.windows;
@@ -51,36 +50,47 @@ void main(string[] args)
 
 enum string usage = "
 Usage:
-alarm 60 [-s]
+alarm 60m
 
 Info:
 Wait for e.g. 60 minutes before notifying the user.
--s uses seconds instead of minutes.
+s = seconds, m = minutes, h = hours.
 Logs the start time to %s.
 
 User can choose:
 Abort - quit.
 Retry - restart timer.
-Ignore - remind in 5m/5s (depending on duration).
+Ignore - remind in 5m/5s (depending on timer duration).
 ".strip;
 
 void run(string[] args)
 {
+	// TODO: change to user config dir?
 	string logfile = buildPath(dirName(args.front), "alarm.txt");
-	auto minuteMul = 60;
-	getopt(args, "s", {minuteMul = 1;});
-	if (args.length != 2)
+	if (args.length != 2 || args[1].empty)
 	{
+	missing:
 		auto msg = usage.format(logfile);
-		messageBox(msg.toUTF16z, "Wrong or missing duration specified!");
+		messageBox(msg.toUTF16z, "Missing or wrong arguments specified!");
 		writeln(msg);
 		return;
 	}
-	size_t duration = to!size_t(args[1]);
-	auto getDur(size_t n){return dur!"seconds"(n * minuteMul);}
-	void sleep(size_t n){
+	auto durStr = args[1];
+	size_t sMul = 1;
+	switch (durStr.back)
+	{
+		case 'h': sMul *= 60; goto case;
+		case 'm': sMul *= 60; goto case;
+		case 's': durStr.popBack(); break;
+		default:
+			goto missing;
+	}
+	// TODO: nicer message if can't convert
+	size_t durSecs = to!size_t(durStr) * sMul;
+	auto getDur(size_t secs){return dur!"seconds"(secs);}
+	void sleep(size_t secs){
 		import core.thread;
-		Thread.sleep(getDur(n));
+		Thread.sleep(getDur(secs));
 	}
 	auto currTime(){return cast(DateTime)Clock.currTime();}
 
@@ -88,10 +98,10 @@ void run(string[] args)
 	{
 		auto start = currTime();
 		auto startmsg = text("Started on ", start,
-			"\nTimer duration: ", getDur(duration));
+			"\nTimer duration: ", getDur(durSecs));
 		File(logfile, "w").writeln(startmsg);
 
-		sleep(duration);
+		sleep(durSecs);
 		while(1)
 		{
 			auto msgtime = currTime();
@@ -114,7 +124,11 @@ void run(string[] args)
 				MB_YESNO, MB_ICONQUESTION) == IDYES)
 				return;
 			if (id == IDIGNORE)
-				sleep(5);
+			{
+				// wait either 5s or 5m, depending on timer duration
+				auto mins = 5 * 60;
+				sleep(durSecs < mins ? 5 : mins);
+			}
 		}
 	}
 }
