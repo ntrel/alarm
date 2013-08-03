@@ -53,9 +53,15 @@ enum string usage = "
 Usage:
 alarm 60 [-s]
 
+Info:
 Wait for e.g. 60 minutes before notifying the user.
 -s uses seconds instead of minutes.
 Logs the start time to %s.
+
+User can choose:
+Abort - quit.
+Retry - restart timer.
+Ignore - remind in 5m/5s (depending on duration).
 ".strip;
 
 void run(string[] args)
@@ -66,7 +72,7 @@ void run(string[] args)
 	if (args.length != 2)
 	{
 		auto msg = usage.format(logfile);
-		messageBox(msg.toUTF16z, "Error!");
+		messageBox(msg.toUTF16z, "Wrong or missing duration specified!");
 		writeln(msg);
 		return;
 	}
