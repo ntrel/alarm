@@ -85,8 +85,15 @@ void run(string[] args)
 		default:
 			goto missing;
 	}
-	// TODO: nicer message if can't convert
-	size_t durSecs = to!size_t(durStr) * sMul;
+	size_t durSecs;
+	try durSecs = to!size_t(durStr);
+	catch (ConvException e)
+	{
+		messageBox(format("Can't convert '%s' to integer: %s!",
+			durStr, e.msg).toUTF16z, "Error!");
+		return;
+	}
+	durSecs *= sMul;
 	auto getDur(size_t secs){return dur!"seconds"(secs);}
 	void sleep(size_t secs){
 		import core.thread;
