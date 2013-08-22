@@ -105,7 +105,8 @@ void run(string[] args)
 	{
 		auto start = currTime();
 		auto startmsg = text("Started on ", start,
-			"\nTimer duration: ", getDur(durSecs));
+			"\nTimer duration: ", getDur(durSecs),
+			"\nEnd time: ", start + durSecs.seconds);
 		File(logfile, "w").writeln(startmsg);
 
 		sleep(durSecs);
