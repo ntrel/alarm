@@ -104,17 +104,18 @@ void run(string[] args)
 	while(1)
 	{
 		auto start = currTime();
-		auto startmsg = text("Started on ", start,
+		auto logmsg = text("Started:\t", start,
 			"\nTimer duration: ", getDur(durSecs),
-			"\nEnd time: ", start + durSecs.seconds);
-		File(logfile, "w").writeln(startmsg);
+			"\nEnd time:\t", start + durSecs.seconds);
+		File(logfile, "w").writeln(logmsg);
+		logmsg.writeln;
 
 		sleep(durSecs);
 		while(1)
 		{
 			auto msgtime = currTime();
 			auto elapsed = msgtime - start;
-			auto msg = format("Elapsed: %s\n\n%s", elapsed, startmsg);
+			auto msg = format("Elapsed: %s\n\n%s", elapsed, logmsg);
 			auto id = messageBox(msg.toUTF16z, "Time's up",
 				MB_ABORTRETRYIGNORE, MB_ICONWARNING, MB_DEFBUTTON3);
 
