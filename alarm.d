@@ -60,7 +60,7 @@ Logs the start time to %s.
 User can choose:
 Abort - quit.
 Retry - restart timer.
-Ignore - remind in 5m/5s (depending on timer duration).
+Ignore - postpone dialog (waits for duration / 10).
 ".strip;
 
 void run(string[] args)
@@ -134,9 +134,14 @@ void run(string[] args)
 				return;
 			if (id == IDIGNORE)
 			{
-				// wait either 5s or 5m, depending on timer duration
-				auto mins = 5 * 60;
-				sleep(durSecs < mins ? 5 : mins);
+				// wait time depends on timer duration, within limits
+				auto t = durSecs / 10;
+				const max = 30 * 60;
+				t = t < 1 ? 1 :
+					t > max ? max :
+					t;
+				debug writefln("Postponed %ss", t);
+				sleep(t);
 			}
 		}
 	}
