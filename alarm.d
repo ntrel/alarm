@@ -119,20 +119,24 @@ void run(string[] args)
 			auto id = messageBox(msg.toUTF16z, "Time's up",
 				MB_ABORTRETRYIGNORE, MB_ICONWARNING, MB_DEFBUTTON3);
 
-			/* confirm important actions in case of accidentally
-			 * typing [ar] just as the dialog is shown */
-			if (id == IDRETRY)
+			if (id == IDABORT)
 			{
-				if (currTime() - msgtime < 5.seconds &&
-					messageBox("Are you sure?", "Restart",
-						MB_YESNO, MB_ICONQUESTION) != IDYES)
+				if (messageBox("Are you sure?", "Quit",
+					MB_YESNO, MB_ICONQUESTION) == IDYES)
+					return;
+				else
 					continue;
-				break;
 			}
-			if (id == IDABORT && messageBox("Are you sure?", "Quit",
-				MB_YESNO, MB_ICONQUESTION) == IDYES)
-				return;
-			if (id == IDIGNORE)
+ 			/* confirm actions in case of accidentally
+			 * typing [ri] just as the dialog is shown */
+			if (currTime() - msgtime < 2.seconds &&
+				messageBox("Are you sure?", null,
+					MB_YESNO, MB_ICONQUESTION) != IDYES)
+				continue;
+			
+			if (id == IDRETRY)
+				break;
+			else if (id == IDIGNORE)
 			{
 				// wait time depends on timer duration, within limits
 				auto t = durSecs / 10;
