@@ -124,20 +124,23 @@ void run(string[] args)
 				if (messageBox("Are you sure?", "Quit",
 					MB_YESNO, MB_ICONQUESTION) == IDYES)
 					return;
-				else
-					continue;
 			}
  			/* confirm actions in case of accidentally
 			 * typing [ri] just as the dialog is shown */
-			if (currTime() - msgtime < 2.seconds &&
-				messageBox("Are you sure?", null,
-					MB_YESNO, MB_ICONQUESTION) != IDYES)
-				continue;
-			
-			if (id == IDRETRY)
+			else if (id == IDRETRY)
+			{
+				if (currTime() - msgtime < 5.seconds &&
+					messageBox("Are you sure?", null,
+						MB_YESNO, MB_ICONQUESTION) != IDYES)
+					continue;
 				break;
+			}
 			else if (id == IDIGNORE)
 			{
+				if (currTime() - msgtime < 2.seconds &&
+					messageBox("Are you sure?", null,
+						MB_YESNO, MB_ICONQUESTION) != IDYES)
+					continue;
 				// wait time depends on timer duration
 				auto t = durSecs / 10.0;
 				// grow ignore time
