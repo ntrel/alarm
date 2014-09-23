@@ -138,14 +138,17 @@ void run(string[] args)
 				break;
 			else if (id == IDIGNORE)
 			{
-				// wait time depends on timer duration, within limits
-				auto t = durSecs / 10;
+				// wait time depends on timer duration
+				auto t = durSecs / 10.0;
+				// grow ignore time
+				static mul = 1.0;
+				t *= mul;
+				mul *= 1.2;
+				// limit to 30m
 				const max = 30 * 60;
-				t = t < 1 ? 1 :
-					t > max ? max :
-					t;
+				t = t > max ? max : t;
 				debug writefln("Postponed %ss", t);
-				sleep(t);
+				sleep(cast(uint)t);
 			}
 		}
 	}
