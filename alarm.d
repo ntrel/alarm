@@ -111,6 +111,7 @@ void run(string[] args)
 		logmsg.writeln;
 
 		sleep(durSecs);
+		auto ignoreMul = 1.0;
 		while(1)
 		{
 			auto msgtime = currTime();
@@ -144,9 +145,8 @@ void run(string[] args)
 				// wait time depends on timer duration
 				auto t = durSecs / 10.0;
 				// grow ignore time
-				static mul = 1.0;
-				t *= mul;
-				mul *= 1.2;
+				t *= ignoreMul;
+				ignoreMul *= 1.2;
 				// limit to 30m
 				const max = 30 * 60;
 				t = t > max ? max : t;
