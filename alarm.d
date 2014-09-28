@@ -131,7 +131,7 @@ void run(string[] args)
 			else if (id == IDRETRY)
 			{
 				if (currTime() - msgtime < 5.seconds &&
-					messageBox("Are you sure?", null,
+					messageBox("Are you sure?", "Restart",
 						MB_YESNO, MB_ICONQUESTION) != IDYES)
 					continue;
 				break;
@@ -139,7 +139,7 @@ void run(string[] args)
 			else if (id == IDIGNORE)
 			{
 				if (currTime() - msgtime < 2.seconds &&
-					messageBox("Are you sure?", null,
+					messageBox("Are you sure?", "Postpone",
 						MB_YESNO, MB_ICONQUESTION) != IDYES)
 					continue;
 				// wait time depends on timer duration
