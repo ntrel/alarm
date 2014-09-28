@@ -128,9 +128,10 @@ void run(string[] args)
 			}
  			/* confirm actions in case of accidentally
 			 * typing [ri] just as the dialog is shown */
-			else if (id == IDRETRY)
+			auto rtime = currTime() - msgtime;
+			if (id == IDRETRY)
 			{
-				if (currTime() - msgtime < 5.seconds &&
+				if (rtime < 5.seconds &&
 					messageBox("Are you sure?", "Restart",
 						MB_YESNO, MB_ICONQUESTION) != IDYES)
 					continue;
@@ -138,7 +139,13 @@ void run(string[] args)
 			}
 			else if (id == IDIGNORE)
 			{
-				if (currTime() - msgtime < 2.seconds &&
+				if (rtime > 10.minutes)
+				{
+					messageBox("Response time > 10m!", "Postpone",
+						MB_OK, MB_ICONWARNING);
+					rtime = 0.seconds;
+				}
+				if (rtime < 2.seconds &&
 					messageBox("Are you sure?", "Postpone",
 						MB_YESNO, MB_ICONQUESTION) != IDYES)
 					continue;
